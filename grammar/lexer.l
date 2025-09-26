@@ -4,6 +4,7 @@
 #include <stdlib.h>
 %}
 
+
 %%
 
 "let"       return LET;
@@ -20,7 +21,14 @@
 "char"      return CHAR;
 "str"       return STR;
 
-[0-9]+      { yylval.ival = atoi(yytext); return INT_LITERAL; }
-[0-9]+"."[0-9]+  { yylval.fval = atof(yytext); return FLOAT_LITERAL; }
+[0-9]+\.[0-9]+   { yylval.fval = atof(yytext); return FLOAT_LITERAL; }
+[0-9]+           { yylval.ival = atoi(yytext); return INT_LITERAL; }
 \"([^\\\"]|\\.)*\" { yylval.sval = strdup(yytext); return STRING_LITERAL; }
-[a-zA-Z_][a-zA-Z0-9]()_]()
+
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return IDENTIFIER; }
+
+[ \t\n]+          ;  
+
+.                 { return yytext[0]; } 
+%%
+

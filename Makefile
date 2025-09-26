@@ -13,4 +13,5 @@ lex.yy.c: grammar/lexer.l parser.tab.h
 
 rust_parser: parser.tab.c lex.yy.c src/main.cpp src/ast.cpp
 	$(CXX) $(CXXFLAGS) parser.tab.c lex.yy.c src/main.cpp src/ast.cpp -o rust_parser
-	$(CXX) $(CXXFLAGS) ... -lfl -o rust_parser
+clean:
+	rm -f grammar/parser.tab.* grammar/lex.yy.c rust_parser

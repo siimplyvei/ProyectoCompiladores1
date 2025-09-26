@@ -12,3 +12,7 @@ int main(int argc, char** argv) {
     }
     return 0;
 }
+
+extern "C" int yywrap() {
+    return 1;
+}
