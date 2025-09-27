@@ -78,17 +78,18 @@ extern int yydebug;
     OR = 279,                      /* OR  */
     NOT = 280,                     /* NOT  */
     EQ = 281,                      /* EQ  */
-    NEQ = 282,                     /* NEQ  */
-    LEQ = 283,                     /* LEQ  */
-    GEQ = 284,                     /* GEQ  */
-    LT = 285,                      /* LT  */
-    GT = 286,                      /* GT  */
-    LBRACE = 287,                  /* LBRACE  */
-    RBRACE = 288,                  /* RBRACE  */
-    LPAREN = 289,                  /* LPAREN  */
-    RPAREN = 290,                  /* RPAREN  */
-    SEMICOLON = 291,               /* SEMICOLON  */
-    COMMA = 292                    /* COMMA  */
+    EQEQ = 282,                    /* EQEQ  */
+    NEQ = 283,                     /* NEQ  */
+    LEQ = 284,                     /* LEQ  */
+    GEQ = 285,                     /* GEQ  */
+    LT = 286,                      /* LT  */
+    GT = 287,                      /* GT  */
+    LBRACE = 288,                  /* LBRACE  */
+    RBRACE = 289,                  /* RBRACE  */
+    LPAREN = 290,                  /* LPAREN  */
+    RPAREN = 291,                  /* RPAREN  */
+    SEMICOLON = 292,               /* SEMICOLON  */
+    COMMA = 293                    /* COMMA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -97,13 +98,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "grammar/parser.y"
+#line 12 "grammar/parser.y"
 
     int ival;
     float fval;
     char* sval;
+    struct ASTNode* node;
 
-#line 107 "parser.tab.h"
+#line 109 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
