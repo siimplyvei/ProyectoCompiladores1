@@ -6,7 +6,7 @@
 int yylex(void);
 int yyerror(const char* s);
 
-ASTNode* root = nullptr;   
+ASTNode* root = nullptr;   // raíz del AST
 %}
 
 %union {
@@ -23,9 +23,9 @@ ASTNode* root = nullptr;
 %token <sval> STRING_LITERAL IDENTIFIER
 %token PLUS MINUS MUL DIV AND OR NOT
 %token EQ EQEQ NEQ LEQ GEQ LT GT
-%token LBRACE RBRACE LPAREN RPAREN SEMICOLON COMMA
+%token LBRACE RBRACE LPAREN RPAREN SEMICOLON COMMA COLON
 
-%type <node> program function function_list stmt stmt_list expr
+%type <node> program function function_list stmt stmt_list expr param_list param_decl type
 
 %%
 
@@ -39,11 +39,30 @@ function_list:
 ;
 
 function:
-    FN IDENTIFIER LPAREN RPAREN LBRACE stmt_list RBRACE
+    FN IDENTIFIER LPAREN param_list RPAREN LBRACE stmt_list RBRACE
     {
         $$ = new ASTNode("Function", $2);
-        $$->children.push_back($6);
+        $$->children.push_back($4); // parámetros
+        $$->children.push_back($7); // cuerpo
     }
+;
+
+param_list:
+    /* vacío */ { $$ = new ASTNode("Params"); }
+  | param_decl { $$ = new ASTNode("Params"); $$->children.push_back($1); }
+  | param_decl COMMA param_list { $$ = $3; $$->children.insert($$->children.begin(), $1); }
+;
+
+param_decl:
+    IDENTIFIER COLON type { $$ = new ASTNode("Param", $1); $$->children.push_back($3); }
+;
+
+type:
+    I32 { $$ = new ASTNode("Type", "i32"); }
+  | F64 { $$ = new ASTNode("Type", "f64"); }
+  | BOOL { $$ = new ASTNode("Type", "bool"); }
+  | CHAR { $$ = new ASTNode("Type", "char"); }
+  | STR { $$ = new ASTNode("Type", "str"); }
 ;
 
 stmt_list:

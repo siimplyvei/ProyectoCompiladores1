@@ -89,7 +89,8 @@ extern int yydebug;
     LPAREN = 290,                  /* LPAREN  */
     RPAREN = 291,                  /* RPAREN  */
     SEMICOLON = 292,               /* SEMICOLON  */
-    COMMA = 293                    /* COMMA  */
+    COMMA = 293,                   /* COMMA  */
+    COLON = 294                    /* COLON  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -105,7 +106,7 @@ union YYSTYPE
     char* sval;
     struct ASTNode* node;
 
-#line 109 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

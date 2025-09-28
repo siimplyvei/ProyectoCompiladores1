@@ -34,6 +34,8 @@
 "<"         return LT;
 ">"         return GT;
 "="         return EQ;
+":"         return COLON;
+
 
 "&&"        return AND;
 "||"        return OR;
