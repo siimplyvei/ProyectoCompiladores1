@@ -6,7 +6,7 @@
 int yylex(void);
 int yyerror(const char* s);
 
-ASTNode* root = nullptr;   // raíz del AST
+ASTNode* root = nullptr;
 %}
 
 %union {
@@ -18,14 +18,17 @@ ASTNode* root = nullptr;   // raíz del AST
 
 %token LET FN IF ELSE WHILE FOR RETURN
 %token I32 F64 BOOL CHAR STR
+
 %token <ival> INT_LITERAL
 %token <fval> FLOAT_LITERAL
 %token <sval> STRING_LITERAL IDENTIFIER
+
 %token PLUS MINUS MUL DIV AND OR NOT
 %token EQ EQEQ NEQ LEQ GEQ LT GT
-%token LBRACE RBRACE LPAREN RPAREN SEMICOLON COMMA COLON
 
-%type <node> program function function_list stmt stmt_list expr param_list param_decl type
+%token LBRACE RBRACE LPAREN RPAREN SEMICOLON COMMA COLON ARROW
+
+%type <node> program function function_list stmt stmt_list expr param_list param_decl type arg_list
 
 %%
 
@@ -43,7 +46,15 @@ function:
     {
         $$ = new ASTNode("Function", $2);
         $$->children.push_back($4); // parámetros
+        $$->children.push_back(new ASTNode("ReturnType", "void")); // retorno implícito
         $$->children.push_back($7); // cuerpo
+    }
+  | FN IDENTIFIER LPAREN param_list RPAREN ARROW type LBRACE stmt_list RBRACE
+    {
+        $$ = new ASTNode("Function", $2);
+        $$->children.push_back($4); // parámetros
+        $$->children.push_back($7); // tipo de retorno
+        $$->children.push_back($9); // cuerpo
     }
 ;
 
@@ -81,11 +92,26 @@ stmt:
         $$ = new ASTNode("Return");
         $$->children.push_back($2);
     }
+  | RETURN SEMICOLON
+    {
+        $$ = new ASTNode("Return"); // retorno vacío
+    }
   | IF expr LBRACE stmt_list RBRACE
     {
         $$ = new ASTNode("If");
-        $$->children.push_back($2);
-        $$->children.push_back($4);
+        $$->children.push_back($2); // condición
+        $$->children.push_back($4); // bloque if
+    }
+  | IF expr LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE
+    {
+        ASTNode* cond = $2;       // expr
+        ASTNode* ifBlock = $4;    // stmt_list
+        ASTNode* elseBlock = $8;  // stmt_list
+
+        $$ = new ASTNode("IfElse");
+        $$->children.push_back(cond);
+        $$->children.push_back(ifBlock);
+        $$->children.push_back(elseBlock);
     }
   | WHILE expr LBRACE stmt_list RBRACE
     {
@@ -117,10 +143,18 @@ expr:
     { $$ = new ASTNode("EqEq"); $$->children.push_back($1); $$->children.push_back($3); }
   | expr NEQ expr
     { $$ = new ASTNode("Neq"); $$->children.push_back($1); $$->children.push_back($3); }
+  | IDENTIFIER LPAREN arg_list RPAREN
+    { $$ = new ASTNode("Call", $1); $$->children.push_back($3); }
   | LPAREN expr RPAREN { $$ = $2; }
   | IDENTIFIER { $$ = new ASTNode("Identifier", $1); }
   | INT_LITERAL { $$ = new ASTNode("IntLiteral", std::to_string($1)); }
   | FLOAT_LITERAL { $$ = new ASTNode("FloatLiteral", std::to_string($1)); }
+;
+
+arg_list:
+    /* vacío */ { $$ = new ASTNode("Args"); }
+  | expr { $$ = new ASTNode("Args"); $$->children.push_back($1); }
+  | expr COMMA arg_list { $$ = $3; $$->children.insert($$->children.begin(), $1); }
 ;
 
 %%

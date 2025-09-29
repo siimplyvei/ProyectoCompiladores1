@@ -35,6 +35,7 @@
 ">"         return GT;
 "="         return EQ;
 ":"         return COLON;
+"->"        return ARROW;
 
 
 "&&"        return AND;
